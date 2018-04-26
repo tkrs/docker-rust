@@ -30,22 +30,22 @@ workflows:
   version: 2
   test_build_and_deploy:
     jobs:
-      - latest
+      - latest:
           context: docker-rust-latest
           filters:
             branches:
               only: master
-      - stable
+      - stable:
           context: docker-rust-stable
           filters:
             branches:
               only: master
-      - beta
+      - beta:
           context: docker-rust-beta
           filters:
             branches:
               only: master
-      - nightly
+      - nightly:
           context: docker-rust-nightly
           filters:
             branches:
