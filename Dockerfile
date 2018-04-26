@@ -1,11 +1,13 @@
 FROM buildpack-deps:stretch
 
+ARG TOOLCHAIN=stable
+
 ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
     PATH=/usr/local/cargo/bin:$PATH \
     TOOLCHAIN=${TOOLCHAIN:-stable}
 
-ONBUILD RUN set -eux; \
+RUN set -eux; \
     \
     url="https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init"; \
     wget "$url"; \

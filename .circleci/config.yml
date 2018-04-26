@@ -13,7 +13,7 @@ build_template: &build_template
           tar -xz -C /tmp -f /tmp/docker-$VER.tgz
           sudo mv /tmp/docker/* /usr/bin
     - run: docker login quay.io -u ${QUAY_USER} -p ${QUAY_PASS}
-    - run: docker build --no-cache --rm -e TOOLCHAIN=${TOOLCHAIN} -t docker-rust .
+    - run: docker build --no-cache --rm --build-arg TOOLCHAIN=${TOOLCHAIN} -t docker-rust .
     - run: docker tag docker-rust quay.io/tkrs/docker-rust:${TAG}
     - run: docker push quay.io/tkrs/docker-rust:${TAG} 
 version: 2
