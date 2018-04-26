@@ -5,7 +5,7 @@ ENV RUSTUP_HOME=/usr/local/rustup \
     PATH=/usr/local/cargo/bin:$PATH \
     TOOLCHAIN=${TOOLCHAIN:-stable}
 
-RUN set -eux; \
+ONBUILD RUN set -eux; \
     \
     url="https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init"; \
     wget "$url"; \
