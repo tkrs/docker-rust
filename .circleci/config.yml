@@ -1,24 +1,52 @@
+build_template: &build_template
+  docker:
+    - image: circleci/buildpack-deps:curl
+  steps:
+    - checkout
+    - setup_remote_docker
+    - run:
+        name: Install Docker client
+        command: |
+          set -x
+          VER="17.03.0-ce"
+          curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
+          tar -xz -C /tmp -f /tmp/docker-$VER.tgz
+          sudo mv /tmp/docker/* /usr/bin
+    - run: docker login quay.io -u ${QUAY_USER} -p ${QUAY_PASS}
+    - run: docker build --no-cache --rm -e TOOLCHAIN=${TOOLCHAIN} -t docker-rust .
+    - run: docker tag docker-rust quay.io/tkrs/docker-rust:${TAG}
+    - run: docker push quay.io/tkrs/docker-rust:${TAG} 
 version: 2
 jobs:
-  build:
-    docker:
-      - image: circleci/buildpack-deps:curl
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Install Docker client
-          command: |
-            set -x
-            VER="17.03.0-ce"
-            curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
-            tar -xz -C /tmp -f /tmp/docker-$VER.tgz
-            sudo mv /tmp/docker/* /usr/bin
-      - run: docker login quay.io -u ${QUAY_USER} -p ${QUAY_PASS}
-      - run: docker build --no-cache --rm -t docker-rust .
-      - run: docker tag docker-rust quay.io/tkrs/docker-rust:latest
-      - run: docker push quay.io/tkrs/docker-rust:latest 
-      # - run: |
-      #     for tag in stable beta; do
-      #       docker build --rm -e TOOLCHAIN=${tag} -t gsutil-crontab:$tag .
-      #     done
+  latest:
+    <<: *build_template
+  stable:
+    <<: *build_template
+  beta:
+    <<: *build_template
+  nightly:
+    <<: *build_template
+workflows:
+  version: 2
+  test_build_and_deploy:
+    jobs:
+      - latest
+          context: docker-rust-latest
+          filters:
+            branches:
+              only: master
+      - stable
+          context: docker-rust-stable
+          filters:
+            branches:
+              only: master
+      - beta
+          context: docker-rust-beta
+          filters:
+            branches:
+              only: master
+      - nightly
+          context: docker-rust-nightly
+          filters:
+            branches:
+              only: master
