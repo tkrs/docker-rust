@@ -12,10 +12,13 @@ build_template: &build_template
           curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
           tar -xz -C /tmp -f /tmp/docker-$VER.tgz
           sudo mv /tmp/docker/* /usr/bin
-    - run: docker login quay.io -u ${QUAY_USER} -p ${QUAY_PASS}
     - run: docker build --no-cache --rm --build-arg TOOLCHAIN=${TOOLCHAIN} -t docker-rust .
-    - run: docker tag docker-rust quay.io/tkrs/docker-rust:${TAG}
-    - run: docker push quay.io/tkrs/docker-rust:${TAG} 
+    - run: |
+        if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
+          docker login quay.io -u ${QUAY_USER} -p ${QUAY_PASS}
+          docker tag docker-rust quay.io/tkrs/docker-rust:${TAG}
+          docker push quay.io/tkrs/docker-rust:${TAG} 
+        fi
 version: 2
 jobs:
   latest:
@@ -28,39 +31,40 @@ jobs:
     <<: *build_template
 workflows:
   version: 2
-  commit:
+  master:
     jobs:
       - latest:
           context: docker-rust-latest
-          filters:
-            branches:
-              only: master
       - stable:
           context: docker-rust-stable
+          requires:
+            - latest
           filters:
             branches:
               only: master
       - beta:
           context: docker-rust-beta
+          requires:
+            - latest
           filters:
             branches:
               only: master
       - nightly:
           context: docker-rust-nightly
+          requires:
+            - latest
           filters:
             branches:
               only: master
-  nightly:
+  stable_beta_and_nightly_scheduled:
     triggers:
       - schedule:
-          cron: "0 18 * * *"
+          cron: "0 0 * * 5"
           filters:
             branches:
               only:
                 - master
     jobs:
-      - latest:
-          context: docker-rust-latest
       - stable:
           context: docker-rust-stable
       - beta:
