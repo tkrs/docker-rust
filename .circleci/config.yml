@@ -31,7 +31,7 @@ jobs:
     <<: *build_template
 workflows:
   version: 2
-  master:
+  commit:
     jobs:
       - latest:
           context: docker-rust-latest
@@ -56,10 +56,10 @@ workflows:
           filters:
             branches:
               only: master
-  stable_beta_and_nightly_scheduled:
+  stable_scheduled:
     triggers:
       - schedule:
-          cron: "0 0 * * 5"
+          cron: "0 0 * * 1"
           filters:
             branches:
               only:
@@ -67,7 +67,25 @@ workflows:
     jobs:
       - stable:
           context: docker-rust-stable
+  beta_scheduled:
+    triggers:
+      - schedule:
+          cron: "0 0 * * 2"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
       - beta:
           context: docker-rust-beta
+  nightly_scheduled:
+    triggers:
+      - schedule:
+          cron: "0 0 * * 3"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
       - nightly:
           context: docker-rust-nightly
