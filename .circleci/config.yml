@@ -67,18 +67,7 @@ workflows:
     jobs:
       - stable:
           context: docker-rust-stable
-  beta_scheduled:
-    triggers:
-      - schedule:
-          cron: "0 0 * * 2"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - beta:
-          context: docker-rust-beta
-  nightly_scheduled:
+  beta_nightly_scheduled:
     triggers:
       - schedule:
           cron: "0 0 * * *"
@@ -89,3 +78,5 @@ workflows:
     jobs:
       - nightly:
           context: docker-rust-nightly
+      - beta:
+          context: docker-rust-beta
