@@ -1,6 +1,8 @@
 build_template: &build_template
   docker:
     - image: circleci/buildpack-deps:curl
+  environment:
+    RUSTC_VER: 1.26.0
   steps:
     - checkout
     - setup_remote_docker
@@ -12,12 +14,12 @@ build_template: &build_template
           curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
           tar -xz -C /tmp -f /tmp/docker-$VER.tgz
           sudo mv /tmp/docker/* /usr/bin
-    - run: docker build --no-cache --rm --build-arg TOOLCHAIN=${TOOLCHAIN} -t docker-rust .
+    - run: docker build --no-cache --rm --build-arg TOOLCHAIN=${TOOLCHAIN:-${RUSTC_VER}} -t docker-rust .
     - run: |
         if [[ "${CIRCLE_BRANCH}" = "master" ]]; then
           docker login quay.io -u ${QUAY_USER} -p ${QUAY_PASS}
-          docker tag docker-rust quay.io/tkrs/docker-rust:${TAG}
-          docker push quay.io/tkrs/docker-rust:${TAG} 
+          docker tag docker-rust quay.io/tkrs/docker-rust:${TAG:-${RUSTC_VER}}
+          docker push quay.io/tkrs/docker-rust:${TAG:-${RUSTC_VER}} 
         fi
 version: 2
 jobs:
@@ -33,8 +35,7 @@ workflows:
   version: 2
   commit:
     jobs:
-      - latest:
-          context: docker-rust-latest
+      - latest
       - stable:
           context: docker-rust-stable
           requires:
