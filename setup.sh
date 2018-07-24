@@ -13,7 +13,7 @@ if [ "${TOOLCHAIN}" != "nightly" ]; then
 fi
 
 rustup component add rustfmt-preview --toolchain nightly
-cargo +nightly install clippy
+rustup component add clippy-preview --toolchain nightly
 
 rustup show
 cargo --version
