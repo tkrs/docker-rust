@@ -8,8 +8,7 @@ chmod +x rustup-init
 rm rustup-init
 chmod -R a+w $RUSTUP_HOME $CARGO_HOME
 
-apt-get update && apt-get -y install libssl-dev pkg-config cmake zlib1g-dev
-RUSTFLAGS="--cfg procmacro2_semver_exempt" cargo install --force cargo-tarpaulin
+cargo install cargo-kcov
 
 if [ "${TOOLCHAIN}" != "nightly" ]; then
   rustup toolchain add nightly
