@@ -2,7 +2,7 @@ build_template: &build_template
   docker:
     - image: circleci/buildpack-deps:curl
   environment:
-    RUSTC_VER: 1.29.0
+    RUSTC_VER: 1.29.1
   steps:
     - checkout
     - setup_remote_docker
