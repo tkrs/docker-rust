@@ -57,10 +57,20 @@ workflows:
           filters:
             branches:
               only: master
-  stable_scheduled:
+  latest_scheduled:
     triggers:
       - schedule:
           cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - latest
+  stable_scheduled:
+    triggers:
+      - schedule:
+          cron: "0 2 * * *"
           filters:
             branches:
               only:
@@ -71,7 +81,7 @@ workflows:
   beta_scheduled:
     triggers:
       - schedule:
-          cron: "0 2 * * *"
+          cron: "0 4 * * *"
           filters:
             branches:
               only:
@@ -82,7 +92,7 @@ workflows:
   nightly_scheduled:
     triggers:
       - schedule:
-          cron: "0 4 * * *"
+          cron: "0 6 * * *"
           filters:
             branches:
               only:
