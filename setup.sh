@@ -21,10 +21,10 @@ cargo install cargo-kcov
 
 if [ "${TOOLCHAIN}" != "nightly" ]; then
   rustup toolchain add nightly
+  rustup component add clippy-preview
 fi
 
 rustup component add rustfmt-preview --toolchain nightly
-rustup component add clippy-preview --toolchain nightly
 
 rustup show
 cargo --version

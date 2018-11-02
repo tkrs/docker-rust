@@ -9,4 +9,4 @@ ENV RUSTUP_HOME=/usr/local/rustup \
 
 COPY setup.sh /root/
 
-RUN /root/setup.sh
+RUN /root/setup.sh && rm /root/setup.sh
