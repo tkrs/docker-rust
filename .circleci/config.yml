@@ -10,8 +10,8 @@ build_template: &build_template
         name: Install Docker client
         command: |
           set -x
-          VER="18.03.1-ce"
-          curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
+          VER="18.06.0-ce"
+          curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/edge/x86_64/docker-$VER.tgz
           tar -xz -C /tmp -f /tmp/docker-$VER.tgz
           sudo mv /tmp/docker/* /usr/bin
     - run: docker build --no-cache --rm --build-arg TOOLCHAIN=${TOOLCHAIN:-${RUSTC_VER}} -t docker-rust .
@@ -21,7 +21,7 @@ build_template: &build_template
           docker tag docker-rust quay.io/tkrs/docker-rust:${TAG:-${RUSTC_VER}}
           docker push quay.io/tkrs/docker-rust:${TAG:-${RUSTC_VER}} 
         fi
-version: 2
+
 jobs:
   latest:
     <<: *build_template
@@ -31,6 +31,7 @@ jobs:
     <<: *build_template
   nightly:
     <<: *build_template
+
 workflows:
   version: 2
   commit:
